@@ -1,6 +1,6 @@
-%% Biomechanical Force Sensor Acquisition, Filtering & Calibration
+%% Biomechanical Force Sensor Signal Processing & Calibration
 % MATLAB portfolio mini-project
-% This project is a simulation of a biomechanical force sensor pipeline.
+% Simulation-based biomedical instrumentation workflow.
 %
 % Pipeline:
 % Simulated force -> Sensor voltage -> Noise -> Filtering
@@ -48,7 +48,7 @@ idx4 = t >= 7 & t < 9;
 force_reference_N(idx4) = 25 + 45 * ...
     sin(pi * (t(idx4)-7) / 2).^2;
 
-% Add a small physiological-like variation
+% Add a small low-frequency variation
 force_reference_N = force_reference_N + ...
     2 * sin(2*pi*1.2*t);
 
