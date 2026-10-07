@@ -2,235 +2,176 @@
 
 ## Overview
 
-This project is a MATLAB-based simulation of a biomechanical force sensor measurement pipeline.
+This repository contains a compact MATLAB simulation of a biomechanical force-sensor processing pipeline.
 
-The objective is to demonstrate a complete signal-processing workflow, from a simulated sensor output to calibrated force estimation and peak-force detection.
+The project demonstrates how a sensor-oriented measurement workflow can transform a noisy voltage signal into a calibrated force estimate and extract a peak-force measurement.
 
-The project focuses on fundamental biomedical engineering concepts including:
+**Scope:** simulation only. No physical sensor, patient data, or clinical validation is involved.
 
-* Sensor signal acquisition simulation
-* Measurement noise
-* Low-pass signal filtering
-* Sensor calibration
-* Linear regression
-* Force estimation
-* Peak-force detection
-* Quantitative error evaluation
+## Engineering Workflow
 
-> **Note:** This is a simulation-based engineering project. It does not use a physical force sensor or patient data.
-
----
-
-## Engineering Pipeline
-
-```text
-Simulated biomechanical force
+    Reference force profile
             ↓
-      Sensor model
+    Simulated force sensor
             ↓
-     Voltage signal (V)
+    Voltage signal + measurement noise
             ↓
-      Measurement noise
+    4th-order Butterworth low-pass filter
             ↓
-   Butterworth low-pass filter
+    Filtered sensor signal
             ↓
-     Filtered voltage
+    Linear sensor calibration
             ↓
-        Calibration
+    Estimated force (N)
             ↓
-   Estimated force (N)
+    Peak-force detection
             ↓
-     Peak-force detection
-            ↓
-     Error evaluation
-```
+    Quantitative evaluation
 
----
+## What the Project Demonstrates
 
-## Project Workflow
+- Sensor-output simulation in volts (V)
+- Reproducible measurement-noise generation
+- Low-pass signal conditioning
+- Butterworth filtering with zero-phase filtering
+- Linear sensor calibration using first-order regression
+- Conversion from voltage to force (N)
+- Peak-force detection
+- RMSE-based estimation error evaluation
+- Visualization of raw/filtered signals and force estimation
 
-### 1. Biomechanical Force Simulation
+## Processing Details
 
-A time-dependent force profile is generated to represent a simplified biomechanical event.
+### 1. Force-profile simulation
 
-The simulated signal contains:
+A simplified time-varying force profile is generated with a main peak, release phase, secondary event, and small low-frequency variation.
 
-* Force increase
-* Main force peak
-* Force release
-* Secondary force event
-* Small signal variations
+The signal is synthetic and is used as a reference for evaluating the processing pipeline.
 
-The reference force is expressed in Newtons (N).
+### 2. Sensor model
 
-### 2. Force Sensor Simulation
+The reference force is converted to an ideal sensor voltage using a linear model:
 
-The simulated sensor converts force into voltage using a linear sensor model:
+    Force (N) = sensitivity × Voltage (V) + offset
 
-```text
-Force (N) = sensitivity × Voltage (V) + offset
-```
+The simulated sensor uses a nominal sensitivity of **50 N/V** and an offset of **-5 N**.
 
-The simulation uses:
+Gaussian measurement noise is then added to the voltage signal.
 
-* Sensor sensitivity: approximately 50 N/V
-* Sensor offset: approximately -5 N
+### 3. Signal conditioning
 
-Measurement noise is then added to reproduce realistic sensor-signal imperfections.
+The noisy voltage is processed with a **4th-order Butterworth low-pass filter**.
 
-### 3. Signal Filtering
+| Parameter | Value |
+|---|---:|
+| Sampling frequency | 1000 Hz |
+| Cutoff frequency | 10 Hz |
+| Filter order | 4 |
+| Filtering method | Zero-phase filtering |
 
-The noisy voltage signal is processed using a fourth-order Butterworth low-pass filter.
+### 4. Calibration
 
-**Parameters:**
+Six known force points are used for a first-order voltage-to-force calibration:
 
-| Parameter          |                Value |
-| ------------------ | -------------------: |
-| Sampling frequency |              1000 Hz |
-| Filter type        | Butterworth low-pass |
-| Filter order       |                    4 |
-| Cutoff frequency   |                10 Hz |
+    0, 25, 50, 75, 100, 125 N
 
-Zero-phase filtering (`filtfilt`) is used to avoid introducing a visible phase shift in the simulated signal.
+The calibration coefficients are estimated with a first-order polynomial fit, and the fit quality is reported using R².
 
-### 4. Sensor Calibration
+**Important:** R² measures the fit to the calibration points used to estimate the calibration line. It is not an independent validation score.
 
-Known calibration force points are used to estimate the voltage-to-force relationship.
+### 5. Force estimation and peak detection
 
-Calibration points:
+The filtered voltage is converted to estimated force using the **calculated calibration coefficients**. The maximum estimated force and its corresponding time are then detected automatically.
 
-```text
-0 N
-25 N
-50 N
-75 N
-100 N
-125 N
-```
+### 6. Error evaluation
 
-A first-order polynomial regression is then used to obtain the calibration slope and offset.
+The project reports:
 
-The calibration quality is evaluated using the coefficient of determination (R²).
+- Calibration slope and offset
+- Calibration R²
+- Reference peak force
+- Estimated peak force
+- Peak-force time
+- RMSE in Newtons
+- RMSE normalized by the mean reference force
 
-### 5. Force Estimation
+The last metric is reported as:
 
-The filtered sensor voltage is converted back into force using the **calculated calibration coefficients**.
-
-This separates the calibration stage from the original simulated sensor parameters.
-
-### 6. Peak Force Detection
-
-The maximum estimated force is automatically detected.
-
-The corresponding time point is also reported.
-
-### 7. Performance Evaluation
-
-The estimated force is compared with the simulated reference force.
-
-The project calculates:
-
-* RMSE (Root Mean Square Error)
-* Relative error
-* Reference peak force
-* Estimated peak force
-* Peak-force timing
-* Calibration R²
-
----
+    Normalized RMSE (%) = RMSE / mean(reference force) × 100
 
 ## Results
 
-Example results obtained from the current simulation:
+Results from the reproducible simulation (random seed = 42):
 
-| Metric               |      Result |
-| -------------------- | ----------: |
-| Calibration slope    | 49.9695 N/V |
-| Calibration offset   |   -5.0421 N |
-| Calibration R²       |      1.0000 |
-| Reference peak force |    123.43 N |
-| Estimated peak force |    123.27 N |
-| Peak time            |     4.089 s |
-| RMSE                 |    0.8478 N |
-| Relative error       |       1.57% |
+| Metric | Result |
+|---|---:|
+| Calibration slope | 49.9695 N/V |
+| Calibration offset | -5.0421 N |
+| Calibration R² | 1.0000 |
+| Reference peak | 123.43 N |
+| Estimated peak | 123.27 N |
+| Peak time | 4.089 s |
+| RMSE | 0.8478 N |
+| Normalized RMSE | 1.57% |
 
-The estimated peak force is very close to the simulated reference peak, while the overall RMSE remains below 1 N for this simulation.
+The estimated peak differs from the simulated reference peak by approximately **0.16 N (0.13%)**.
 
-> These results describe the behavior of the simulated pipeline and should not be interpreted as validation of a physical medical sensor.
-
----
+These results describe the behavior of the simulated pipeline only; they do **not** represent accuracy of a physical or medical device.
 
 ## Visualization
 
-The MATLAB script generates two plots:
+The generated figure contains two panels:
 
-### 1. Raw vs Filtered Sensor Signal
+1. **Raw vs filtered sensor voltage** — shows the effect of low-pass filtering on measurement noise.
+2. **Calibrated force estimation** — compares reference and estimated force, displays ±5% tolerance boundaries, and marks the detected peak.
 
-The first plot compares the noisy sensor voltage with the filtered voltage.
-
-This illustrates the effect of low-pass filtering on measurement noise.
-
-### 2. Calibrated Force Estimation
-
-The second plot compares:
-
-* Reference force
-* Estimated force
-* ±5% tolerance boundaries
-* Detected peak force
-
-This provides a visual assessment of the calibration and estimation process.
-
----
-
-## Technologies
-
-* MATLAB
-* Signal Processing
-* Butterworth Filtering
-* Linear Regression
-* Sensor Calibration
-* Biomedical Instrumentation
-* Data Visualization
-
----
-
-## Repository Structure
-
-```text
-biomechanical-force-sensor-matlab/
-│
-├── main.m
-└── README.md
-```
-
----
+![Biomechanical force sensor analysis](results/Biomechanical%20Force%20Sensor%20Analysis.png)
 
 ## How to Run
 
 ### Requirements
 
-* MATLAB
+- MATLAB
+- **Signal Processing Toolbox** for Butterworth filtering
 
-No external dataset is required because the signal is generated directly by the MATLAB script.
+No external dataset is required.
 
-### Run the project
+### Run
 
-Open `main.m` in MATLAB and execute:
+Open main.m in MATLAB and execute:
 
-```matlab
-main
-```
+    main
 
-The script will:
+The script generates the analysis figure and prints the numerical results in the MATLAB Command Window.
 
-1. Generate the simulated sensor signal
-2. Add measurement noise
-3. Filter the signal
-4. Perform sensor calibration
-5. Estimate the force
-6. Detect the peak force
-7. Calculate performance metrics
-8. Generate the two analysis figures
+## Repository Structure
 
----
+    biomechanical-force-sensor-matlab/
+    ├── main.m
+    ├── README.md
+    └── results/
+        └── Biomechanical Force Sensor Analysis.png
+
+## Why This Project
+
+This mini-project was created to practice a complete biomedical instrumentation workflow:
+
+**sensor signal → signal conditioning → calibration → force estimation → measurement evaluation**
+
+It complements medical-imaging and biomedical-AI projects by demonstrating a different engineering skill set: **sensor data processing and quantitative measurement analysis in MATLAB**.
+
+## Limitations and Possible Extensions
+
+This project is intentionally small and simulation-based. Possible next steps include:
+
+- Replacing the synthetic signal with recorded sensor data
+- Adding independent calibration and validation datasets
+- Comparing different filtering strategies
+- Quantifying peak-force error separately from overall RMSE
+- Testing robustness across different noise levels
+- Exporting processed measurements for further analysis
+
+## Author
+
+**Ghada Boughrara**  
+Biomedical Engineering Student — ESPITA, Tunisia
