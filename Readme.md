@@ -170,8 +170,3 @@ This project is intentionally small and simulation-based. Possible next steps in
 - Quantifying peak-force error separately from overall RMSE
 - Testing robustness across different noise levels
 - Exporting processed measurements for further analysis
-
-## Author
-
-**Ghada Boughrara**  
-Biomedical Engineering Student — ESPITA, Tunisia
