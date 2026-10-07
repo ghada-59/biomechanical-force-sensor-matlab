@@ -1,8 +1,10 @@
-# Biomechanical Force Sensor Signal Processing & Calibration — MATLAB
+# Biomechanical Force Sensing & Signal Processing — MATLAB
+
+> **Portfolio mini-project | Biomedical Instrumentation & Signal Processing**
 
 ## Overview
 
-This repository contains a compact MATLAB simulation of a biomechanical force-sensor processing pipeline.
+This repository contains a compact MATLAB simulation of a biomechanical force-sensing workflow.
 
 The project demonstrates how a sensor-oriented measurement workflow can transform a noisy voltage signal into a calibrated force estimate and extract a peak-force measurement.
 
@@ -146,7 +148,7 @@ The script generates the analysis figure and prints the numerical results in the
 
 ## Repository Structure
 
-    biomechanical-force-sensor-matlab/
+    biomechanical-force-sensing-matlab/
     ├── main.m
     ├── README.md
     └── results/
@@ -154,7 +156,7 @@ The script generates the analysis figure and prints the numerical results in the
 
 ## Why This Project
 
-This mini-project was created to practice a complete biomedical instrumentation workflow:
+This portfolio mini-project demonstrates a focused biomedical instrumentation workflow:
 
 **sensor signal → signal conditioning → calibration → force estimation → measurement evaluation**
 
