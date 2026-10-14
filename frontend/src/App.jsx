@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { Activity, AlertTriangle, ArrowRight, Gauge, LoaderCircle, Moon, RefreshCw, Settings2, ShieldCheck, Sun, Waves } from "lucide-react";
 const API=import.meta.env.VITE_API_BASE||"http://127.0.0.1:8000";
 const DEFAULTS={noise_std_v:0.015,cutoff_hz:10,filter_order:4};
-function pathFor(values,width=820,height=220,pad=14){
- const lo=Math.min(...values),hi=Math.max(...values),range=Math.max(hi-lo,1e-9);
+function pathFor(values,width=820,height=220,pad=14,lo=Math.min(...values),hi=Math.max(...values)){
+ const range=Math.max(hi-lo,1e-9);
  return values.map((v,i)=>(i?"L":"M")+(pad+i/(values.length-1)*(width-pad*2)).toFixed(2)+" "+(height-pad-(v-lo)/range*(height-pad*2)).toFixed(2)).join(" ");
 }
 function Chart({title,subtitle,series,lines,unit}){
  const all=lines.flatMap(l=>series[l.key]||[]);const lo=Math.min(...all),hi=Math.max(...all);
- return <section className="chart-card"><div className="chart-head"><div><small>{subtitle}</small><h3>{title}</h3></div><span className="chart-unit">{unit}</span></div><svg viewBox="0 0 820 245" role="img" aria-label={title+" line chart"}><line x1="14" y1="225" x2="806" y2="225" className="axis"/>{[1,2,3,4].map(i=><line key={i} x1="14" y1={i*44} x2="806" y2={i*44} className="grid"/>)}{lines.map(line=><path key={line.key} d={pathFor(series[line.key])} className={"plot-line "+line.cls}/>)}<text x="14" y="241" className="tick">0 s</text><text x="410" y="241" className="tick" textAnchor="middle">5 s</text><text x="806" y="241" className="tick" textAnchor="end">10 s</text></svg><div className="legend">{lines.map(line=><span key={line.key}><i className={line.cls}/>{line.label}</span>)}</div><div className="chart-range"><span>MIN {lo.toFixed(2)}</span><span>MAX {hi.toFixed(2)}</span></div></section>
+ return <section className="chart-card"><div className="chart-head"><div><small>{subtitle}</small><h3>{title}</h3></div><span className="chart-unit">{unit}</span></div><svg viewBox="0 0 820 245" role="img" aria-label={title+" line chart"}><line x1="14" y1="225" x2="806" y2="225" className="axis"/>{[1,2,3,4].map(i=><line key={i} x1="14" y1={i*44} x2="806" y2={i*44} className="grid"/>)}{lines.map(line=><path key={line.key} d={pathFor(series[line.key],820,220,14,lo,hi)} className={"plot-line "+line.cls}/>)}<text x="14" y="241" className="tick">0 s</text><text x="410" y="241" className="tick" textAnchor="middle">5 s</text><text x="806" y="241" className="tick" textAnchor="end">10 s</text></svg><div className="legend">{lines.map(line=><span key={line.key}><i className={line.cls}/>{line.label}</span>)}</div><div className="chart-range"><span>MIN {lo.toFixed(2)}</span><span>MAX {hi.toFixed(2)}</span></div></section>
 }
 export default function App(){
  const [theme,setTheme]=useState(()=>localStorage.getItem("instrument-theme")||"light");
