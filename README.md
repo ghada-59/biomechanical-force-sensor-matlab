@@ -1,6 +1,6 @@
 # Biomechanical Force Sensing & Signal Processing — MATLAB
 
-> **Portfolio mini-project | Biomedical Instrumentation & Signal Processing**
+> **Biomedical Instrumentation & Signal Processing**
 
 ## Overview
 
